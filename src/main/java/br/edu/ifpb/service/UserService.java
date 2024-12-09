@@ -8,6 +8,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import br.edu.ifpb.entity.User;
+import br.edu.ifpb.entity.dto.UserDTO;
 import br.edu.ifpb.repository.UserRepository;
 
 @Service
@@ -38,5 +39,16 @@ public class UserService {
 
 	public Page<User> findAll(PageRequest page) {
 		return userRepository.findAll(page);
+	}
+
+	public Page<UserDTO> findAllDto(PageRequest page) {
+		Page<User> userPage = userRepository.findAll(page);
+
+		 // Converter para DTO
+        Page<UserDTO> userDTOPage = userPage.map(user -> 
+            new UserDTO(user.getId(), user.getFirstName(), user.getLastName())
+        );
+
+        return userDTOPage;
 	}
 }
