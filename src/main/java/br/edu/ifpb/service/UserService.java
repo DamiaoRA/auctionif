@@ -3,6 +3,8 @@ package br.edu.ifpb.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import br.edu.ifpb.entity.User;
@@ -14,7 +16,7 @@ public class UserService {
 	@Autowired
 	private UserRepository userRepository;
 
-	public User createUser(User u) {
+	public User save(User u) {
 		return userRepository.save(u);
 	}
 
@@ -22,15 +24,19 @@ public class UserService {
 		return userRepository.findAll();
 	}
 
-	public User getUserById(Long id) {
+	public User findById(Long id) {
 		return userRepository.findById(id)
 				.orElseThrow(() -> new RuntimeException("User not found"));
 	}
 
-	public void deleteProduct(Long id) {
+	public void deleteById(Long id) {
 		if(!userRepository.existsById(id)) {
 			throw new RuntimeException("User not found");
 		}
 		userRepository.deleteById(id);
+	}
+
+	public Page<User> findAll(PageRequest page) {
+		return userRepository.findAll(page);
 	}
 }

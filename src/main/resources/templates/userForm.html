@@ -7,8 +7,13 @@
 <body>
     <div class="container mt-5">
         <h2>Cadastro de Usuário</h2>
-        <h3><p th:text="${message}"/></h3>
-        <form th:action="@{/user/save}" th:object="${user}" method="post" class="mt-4">
+        <!-- Exibe a mensagem de sucesso, se existir -->
+		<div th:if="${successMessage}" style="color: green;">
+			<p th:text="${successMessage}"></p>
+		</div>
+		<form th:action="@{/user/save}" th:object="${user}" method="post" class="mt-4">
+			<input hidden="hidden" id="id" th:field="*{id}">
+			
             <!-- First Name -->
             <div class="mb-3">
                 <label for="firstName" class="form-label">First Name</label>
@@ -22,26 +27,20 @@
             </div>
 
             <!-- Gender -->
-            <!-- 
             <div class="mb-3">
                 <label class="form-label">Gender</label>
-                <div>
-                    <input type="radio" id="male" th:field="*{gender}" value="Male">
-                    <label for="male">Male</label>
-
-                    <input type="radio" id="female" th:field="*{gender}" value="Female">
-                    <label for="female">Female</label>
+                <div th:each="gender : ${T(br.edu.ifpb.entity.GenderType).values()}">
+	                <input type="radio" th:field="*{gender}" th:value="${gender}" 
+	                       th:id="${'gender-' + gender}" />
+	                <label th:for="${'gender-' + gender}" th:text="${gender.displayName}"></label>
                 </div>
             </div>
-            -->
 
             <!-- Date of Birth -->
-            <!--
             <div class="mb-3">
                 <label for="dateOfBirth" class="form-label">Date of Birth</label>
                 <input type="date" id="dateOfBirth" class="form-control" th:field="*{dateOfBirth}" required>
             </div>
-            -->
 
             <!-- Submit Button -->
             <button type="submit" class="btn btn-primary">Salvar</button>
