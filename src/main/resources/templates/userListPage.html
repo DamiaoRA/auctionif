@@ -22,9 +22,9 @@
         </thead>
         <tbody>
             <tr th:each="user : ${userPage.content}">
-                <td th:text="${user.id}">1</td>
-                <td th:text="${user.firstName}">John</td>
-                <td th:text="${user.lastName}">Doe</td>
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.firstName}"></td>
+                <td th:text="${user.lastName}"></td>
                 <td title="Action">
                     <!-- Botões de ação -->
                     <a th:href="@{/user/edit/{id}(id=${user.id})}">
