@@ -68,7 +68,13 @@ public class UserRestController {
         List<User> users = userService.getAllUsers();
         return ResponseEntity.ok(users);
 	}
-	
+
+	@GetMapping("get/{id}")
+	public ResponseEntity<User> get(@PathVariable Long id) {
+		User user = userService.findById(id);
+        return ResponseEntity.ok(user);
+	}
+
 	@DeleteMapping("delete/{id}")
 	public ResponseEntity<?> delete(@PathVariable Long id){
 		try {
