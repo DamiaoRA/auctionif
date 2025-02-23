@@ -2,7 +2,11 @@ package br.edu.ifpb.entity;
 
 import java.sql.Date;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -14,6 +18,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
@@ -22,11 +28,14 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
+@NoArgsConstructor
 @Table(name="TB_USER")
-public class User {
+@SuppressWarnings("serial")
+public class User implements UserDetails {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, 
@@ -39,7 +48,8 @@ public class User {
 	private String firstName;
 	
 	private String lastName;
-	
+
+	@Column(unique = true)
 	private String email;
 	
 	private String password;
@@ -61,9 +71,24 @@ public class User {
 	@Column(name="date_birth")
 	@Temporal(TemporalType.DATE)
 	private Date dateOfBirth;
-	
+
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(
+			name = "tb_user_role",
+			joinColumns = @JoinColumn(name="user_id"),
+			inverseJoinColumns = @JoinColumn(name = "role_id")
+	)
+	private List<Role> roles;
+
 	@Transient
 	private Integer age;
+	
+	public User (Long id, String firstName, String lastName, String email) {
+		this.id = id;
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+	}
 
 	public void setDateOfBirth(Date dateOfBirth) {
 		this.dateOfBirth = dateOfBirth;
@@ -81,5 +106,15 @@ public class User {
             age--;
         }
         this.age = age;
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return getRoles();
+	}
+
+	@Override
+	public String getUsername() {
+		return email;
 	}
 }

@@ -11,7 +11,7 @@ import br.edu.ifpb.entity.dto.UserDTO;
 @Component
 public class UserMapper {
 	public UserDTO toDTO(User user) {
-        return new UserDTO(user.getId(), user.getFirstName(), user.getLastName());
+        return UserDTO.fromEntity(user);
     }
 
     public List<UserDTO> toDTOList(List<User> users) {

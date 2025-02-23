@@ -8,6 +8,9 @@ import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import br.edu.ifpb.entity.User;
@@ -16,7 +19,7 @@ import br.edu.ifpb.mapper.UserMapper;
 import br.edu.ifpb.repository.UserRepository;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 
 	@Autowired
 	protected UserRepository userRepository;
@@ -25,6 +28,12 @@ public class UserService {
 	protected UserMapper userMapper;
 
 	public User save(User u) {
+//		// Buscar todas as roles informadas no banco de dados
+//        List<Role> validRoles = u.getRoles().stream()
+//            .map(role -> roleRepository.findByRole(role.getRole())
+//                    .orElseThrow(() -> new IllegalArgumentException("Role inválida: " + role.getRole())))
+//            .collect(Collectors.toList());
+
 		return userRepository.save(u);
 	}
 
@@ -103,4 +112,16 @@ public class UserService {
 	    Example<User> example = Example.of(filter, matcher);
 	    return example;
 	}
+
+	@Override
+	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+		return userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+	}
+	
+	public UserDTO findDtoByEmail(String email) {
+		return userRepository.findDtoByEmail(email)
+				.orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+	}
+	
 }
