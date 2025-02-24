@@ -47,7 +47,7 @@ public class UserWebController {
 
 	@GetMapping("/list")
 	public String listUsers(Model model) {
-        List<User> users = userService.getAllUsers();
+        List<UserDTO> users = userService.getAllUsers();
 
         // Adiciona a lista ao modelo
         model.addAttribute("users", users);

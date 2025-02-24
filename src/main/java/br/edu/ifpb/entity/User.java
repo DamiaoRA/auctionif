@@ -1,6 +1,7 @@
 package br.edu.ifpb.entity;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
@@ -116,5 +117,11 @@ public class User implements UserDetails {
 	@Override
 	public String getUsername() {
 		return email;
+	}
+
+	public void addRole(Role role) {
+		if(roles == null)
+			roles = new ArrayList<Role>();
+		roles.add(role);
 	}
 }

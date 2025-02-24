@@ -1,6 +1,5 @@
 package br.edu.ifpb.restcontroller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -16,18 +15,16 @@ import br.edu.ifpb.entity.dto.TokenDTO;
 import br.edu.ifpb.entity.dto.UserDTO;
 import br.edu.ifpb.service.JwtService;
 import br.edu.ifpb.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
 
-//	@Autowired
 	protected AuthenticationManager authenticationManager;
 
-//	@Autowired
 	protected UserService userService;
 
-//	@Autowired
 	private JwtService jwtService;
 	
 	public AuthController(
@@ -58,4 +55,9 @@ public class AuthController {
 		}
     }
 
+	@PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        SecurityContextHolder.clearContext(); // Remove a autenticação do usuário atual
+        return ResponseEntity.ok("Logout realizado com sucesso!");
+    }
 }

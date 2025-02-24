@@ -1,14 +1,12 @@
 package br.edu.ifpb.entity;
 
-import java.util.Arrays;
+import java.io.Serializable;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -16,7 +14,8 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name="TB_USER_CONTENT")
-public class UserContent {
+@SuppressWarnings("serial")
+public class UserContent implements Serializable {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, 

@@ -1,6 +1,7 @@
 package br.edu.ifpb.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -37,8 +38,15 @@ public class UserService implements UserDetailsService {
 		return userRepository.save(u);
 	}
 
-	public List<User> getAllUsers() {
-		return userRepository.findAll();
+	public List<UserDTO> getAllUsers() {
+		List<User> users = userRepository.findAll();
+
+		 // Converter para DTO
+        List<UserDTO> usersDto = users.stream().map(
+        	user -> UserDTO.fromEntity(user)
+        ).collect(Collectors.toList());
+
+        return usersDto;
 	}
 
 	public User findById(Long id) {
@@ -122,6 +130,15 @@ public class UserService implements UserDetailsService {
 	public UserDTO findDtoByEmail(String email) {
 		return userRepository.findDtoByEmail(email)
 				.orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+	}
+
+	public int updatenorules(User user) {
+		return userRepository.updatenorules(
+				user.getId(), 
+				user.getFirstName(),
+				user.getLastName(),
+				user.getEmail(),
+				user.getPassword());
 	}
 	
 }

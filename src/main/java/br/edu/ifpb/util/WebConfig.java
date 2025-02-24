@@ -1,13 +1,14 @@
 package br.edu.ifpb.util;
 
+import static br.edu.ifpb.util.Constants.ADMIN;
+import static br.edu.ifpb.util.Constants.MANAGER;
+
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -20,31 +21,24 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import br.edu.ifpb.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
-	
-//	@Autowired
-	private final JwtAuthFilter jwtAuthFilter;//TODO
 
-//	@Autowired
-    private final UserService userService;
+	private final JwtAuthFilter jwtAuthFilter;
 	
-	public WebConfig(JwtAuthFilter jwtAuthFilter, UserService userService) {
+	public WebConfig(JwtAuthFilter jwtAuthFilter) {
         this.jwtAuthFilter = jwtAuthFilter;
-        this.userService = userService;
     }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-    	registry.addMapping("/**")  // Permite CORS para qualquer endpoint que comece com "/api/"
-        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH");
-//        registry.addMapping("/api/**")  // Permite CORS para qualquer endpoint que comece com "/api/"
-        //.allowedOrigins("http://localhost:5173");  // Permite requisições apenas deste domínio
+    	// Permite CORS para qualquer endpoint que comece com "/api/"
+    	registry.addMapping("/**")  
+        	.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH");
     }
 
     @Bean
@@ -63,10 +57,15 @@ public class WebConfig implements WebMvcConfigurer {
         	.csrf(csrf -> csrf.disable())
         	.authorizeHttpRequests(auth -> auth
         			.requestMatchers("/api/auth/**").permitAll()
-        			.requestMatchers("/api/user/save").permitAll()
-        			.requestMatchers(HttpMethod.DELETE, "/api/user/delete/**")
-        				.hasRole("ADMIN")
+        			.requestMatchers(HttpMethod.POST, "/api/user/register").hasRole(ADMIN)
+        			.requestMatchers(HttpMethod.POST, "/api/user/basicregister").permitAll()
+        			.requestMatchers(HttpMethod.DELETE, "/api/user/delete/**").hasRole(ADMIN)
+        			.requestMatchers("/api/user/list").hasAnyRole(ADMIN, MANAGER)
+        			.requestMatchers(HttpMethod.PUT, "/api/user/update/**").hasRole(ADMIN)
+        			.requestMatchers(HttpMethod.PUT, "/api/user/updatenorules/**")
+        							.hasAnyRole(ADMIN, MANAGER)
         			.anyRequest().authenticated()
+//        			.requestMatchers(HttpMethod.PUT, "/api/user/update/**").hasRole("ADMIN")
 //        			.anyRequest().permitAll()
         	)
         	.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -76,12 +75,14 @@ public class WebConfig implements WebMvcConfigurer {
         		(logout) -> logout
         		.clearAuthentication(true)
         		.invalidateHttpSession(true)
-        		.logoutUrl("api/logout") //TODO
+        		.logoutUrl("/api/auth/logout")
         		.logoutSuccessHandler(new LogoutSuccessHandler() {
 					@Override
 					public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
 							throws IOException, ServletException {
 						//Em caso de sucesso no logout, não faz nada
+						response.setStatus(HttpServletResponse.SC_OK);
+		                response.getWriter().write("Logout realizado com sucesso!");
 					}
 				})
         );
