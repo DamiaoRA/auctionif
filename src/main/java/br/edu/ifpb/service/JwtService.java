@@ -2,6 +2,9 @@ package br.edu.ifpb.service;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import javax.crypto.SecretKey;
@@ -11,6 +14,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import br.edu.ifpb.entity.Role;
+import br.edu.ifpb.entity.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -35,8 +40,14 @@ public class JwtService {
     }
 
 	public String generateToken(Authentication authentication) {
+		String[] roles = ((User)(authentication.getPrincipal())).arrayRoles();
+
+		Map<String, String[]> claims = new HashMap<>();
+        claims.put("roles", roles); // Adiciona a lista de roles no token
+
     	return Jwts.builder()
                 .subject(authentication.getName())
+                .claims(claims)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(getSigningKey()) // Assina o token com a chave segura

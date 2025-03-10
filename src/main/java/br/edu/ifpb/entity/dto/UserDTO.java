@@ -16,7 +16,7 @@ public class UserDTO {
 	private String lastName;
 	private String email;
 	private List<Role> roles;
-	
+
 	public UserDTO(Long id, String firstName, String lastName, String email) {
 		this.id = id;
 		this.firstName = firstName;

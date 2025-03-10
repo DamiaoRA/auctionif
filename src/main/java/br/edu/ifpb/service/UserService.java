@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import br.edu.ifpb.entity.Role;
 import br.edu.ifpb.entity.User;
 import br.edu.ifpb.entity.dto.UserDTO;
 import br.edu.ifpb.mapper.UserMapper;
@@ -128,8 +129,11 @@ public class UserService implements UserDetailsService {
 	}
 	
 	public UserDTO findDtoByEmail(String email) {
-		return userRepository.findDtoByEmail(email)
+		UserDTO user = userRepository.findDtoByEmail(email)
 				.orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+		List<Role> roles = userRepository.listRole(user.getId());
+		user.setRoles(roles);
+		return user;
 	}
 
 	public int updatenorules(User user) {

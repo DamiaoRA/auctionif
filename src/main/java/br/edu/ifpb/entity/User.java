@@ -114,6 +114,16 @@ public class User implements UserDetails {
 		return getRoles();
 	}
 
+	public String[] arrayRoles() {
+		int size = roles.size();
+		String[] array = new String[size];
+
+		for(int i = 0; i < size; i++) {
+			array[i] = roles.get(i).getRole();
+		}
+		return array;
+	}
+
 	@Override
 	public String getUsername() {
 		return email;

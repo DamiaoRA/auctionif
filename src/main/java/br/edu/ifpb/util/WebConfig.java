@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -37,8 +38,12 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
     	// Permite CORS para qualquer endpoint que comece com "/api/"
-    	registry.addMapping("/**")  
-        	.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH");
+    	registry.addMapping("/**")
+//    		.allowedOrigins("http://localhost:5173")
+    		.allowedOrigins("*")
+        	.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
+        	.allowedHeaders("Authorization", "Content-Type") // Permite esses headers
+            .exposedHeaders("Authorization"); // Permite que o frontend veja esse header
     }
 
     @Bean
@@ -51,9 +56,24 @@ public class WebConfig implements WebMvcConfigurer {
         return new BCryptPasswordEncoder();
     }
     
+//    @Bean
+//    public CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(List.of("http://localhost:5173")); // Permite o frontend
+//        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+//        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+//        configuration.setExposedHeaders(List.of("Authorization")); // Permite visualizar o token no frontend
+//        configuration.setAllowCredentials(true);
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
+    
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+        	.cors(Customizer.withDefaults())
         	.csrf(csrf -> csrf.disable())
         	.authorizeHttpRequests(auth -> auth
         			.requestMatchers("/api/auth/**").permitAll()

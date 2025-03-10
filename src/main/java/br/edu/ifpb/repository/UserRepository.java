@@ -1,5 +1,6 @@
 package br.edu.ifpb.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import br.edu.ifpb.entity.Role;
 import br.edu.ifpb.entity.User;
 import br.edu.ifpb.entity.dto.UserDTO;
 import jakarta.transaction.Transactional;
@@ -25,6 +27,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 			+ "u.lastName, "
 			+ "u.email) FROM User u WHERE u.email = :email")
     Optional<UserDTO> findDtoByEmail(String email);
+
+	@Query("SELECT u.roles FROM User u WHERE u.id = :id")
+	List<Role> listRole(Long id);
 
 	@Modifying
     @Transactional
